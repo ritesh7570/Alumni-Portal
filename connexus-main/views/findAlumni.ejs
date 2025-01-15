@@ -1,0 +1,115 @@
+<%- layout("/layouts/boilerplate") -%>
+
+<div class="container mt-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="mb-0">Find Alumni</h1>
+    </div>
+
+    <!-- Search Input -->
+    <div class="mb-3">
+        <input type="text" id="searchInput"
+            placeholder="Search by Username, Graduation Year, Degree, Department, Employer, Job Title, Industry, Experience, Skills, or Groups"
+            class="form-control">
+    </div>
+
+    <!-- No matches found message -->
+    <div id="noMatches" class="alert alert-info" style="display: none;" role="alert">
+        No matches found.
+    </div>
+
+    <% if (alumniList.length === 0) { %>
+    <div class="alert alert-warning" role="alert">
+        No alumni found.
+    </div>
+    <% } else { %>
+    <div class="row" id="alumniList">
+        <% alumniList.forEach(alumni => { %>
+        <div class="col-md-4 mb-4 alumni-card">
+            <div class="card">
+                <div class="card-body p-0">
+                    <div class="cover-photo-container">
+                        <!-- Alumni Cover Photo -->
+                        <img src="<%= alumni.coverPhoto || '/images/default-cover.jpg' %>" class="cover-photo"
+                            alt="Cover Photo of <%= alumni.username %>">
+                    </div>
+                    <!-- Alumni Profile Picture (Now positioned correctly) -->
+                    <img src="<%= alumni.profilePicture || '/images/default-profile.png' %>"
+                        class="profile-photo rounded-circle" alt="<%= alumni.username %>">
+
+                    <div class="upperpart text-center mt-5">
+                        <h5 class="card-title mt-4">
+                            <%= alumni.username %>
+                            <% if (alumni.isStarAlumni) { %>
+                            <span class="text-warning">&#9733;</span>
+                            <% } %>
+                        </h5>
+                        <p class="card-text">Degree: <%= alumni.degree %> (Class of <%= alumni.graduationYear %>)</p>
+                        <p class="card-text"><%= alumni.city %>, <%= alumni.country %></p>
+                        <p class="card-text">Skills:
+                            <%= alumni.skills && alumni.skills.length > 0 ? alumni.skills.join(', ') : 'No skills listed' %>
+                        </p>
+                        <p class="card-text">Groups:
+                            <%= alumni.groups && alumni.groups.length > 0 ? alumni.groups.join(', ') : 'No groups listed' %>
+                        </p>
+                        <% if (alumni.isStarAlumni) { %>
+                        <p class="text-success font-weight-bold">(Star Alumni)</p>
+                        <% } %>
+                    </div>
+                    <div class="lowerpart">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="/users/profile/<%= alumni._id %>" class="btn btn-primary btn-sm readmore">Show More
+                                Details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <% }) %>
+    </div>
+    <% } %>
+</div>
+
+<script>
+    // Function to filter alumni based on search input
+    function filterAlumni() {
+        const searchInput = document.getElementById('searchInput').value.trim().toLowerCase();
+        const alumniCards = document.querySelectorAll('.alumni-card');
+        const noMatchesMessage = document.getElementById('noMatches');
+        let hasMatch = false;
+
+        alumniCards.forEach(card => {
+            const username = card.querySelector('.card-title').textContent.toLowerCase();
+            const degree = card.querySelector('.card-text').textContent.toLowerCase();
+            const details = card.querySelector('.card-text').textContent.toLowerCase();
+
+            const skills = card.querySelectorAll('.card-text')[2].textContent.toLowerCase();
+            const groups = card.querySelectorAll('.card-text')[3].textContent.toLowerCase();
+
+            if (username.includes(searchInput) || degree.includes(searchInput) || details.includes(searchInput) ||
+                skills.includes(searchInput) || groups.includes(searchInput)) {
+                card.style.display = 'block';
+                hasMatch = true;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        noMatchesMessage.style.display = hasMatch ? 'none' : 'block';
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const alumniImages = document.querySelectorAll('.profile-photo, .cover-photo');
+
+        alumniImages.forEach(img => {
+            img.onerror = function () {
+                if (img.classList.contains('profile-photo')) {
+                    img.src = '/images/default-profile.png';
+                } else if (img.classList.contains('cover-photo')) {
+                    img.src = '/images/default-cover.jpg';
+                }
+            };
+        });
+    });
+
+    document.getElementById('searchInput').addEventListener('keyup', filterAlumni);
+</script>

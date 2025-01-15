@@ -1,0 +1,29 @@
+<%- layout("/layouts/boilerplate") -%>
+<div class="profile-container mt-3">
+    <div class="row">
+        <div class="col-lg-3">
+            <%- include('../partials/leftsidebar') %>
+        </div>
+        <div class="col-lg-7 middle-content">
+            <%- include('../partials/middlecontent') %>
+        </div>
+        <div class="col-lg-2">
+            <%- include('../partials/rightsidebar') %>
+        </div>
+    </div>
+</div>
+
+<script src="/js/profile.js"></script>
+
+<style>
+    .left-sidebar, .right-sidebar {
+        position: sticky;
+        top: 0;
+        height: 100vh; /* Full height for fixed positioning */
+        overflow-y: auto; /* Enable scrolling if content overflows */
+    }
+    .middle-content {
+        overflow-y: auto; /* Allow middle section to scroll */
+        height: 100vh; /* Full height to match sidebars */
+    }
+</style>
